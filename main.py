@@ -168,21 +168,24 @@ else:
         candidate_info = st.session_state.candidate_info
 
     # Add download options for audio and transcript
-    if st.session_state.get('saved_audio') is not None:
-        st.audio(st.session_state.saved_audio, format='audio/wav')
+    if st.session_state.get('saved_audio') and isinstance(st.session_state.saved_audio, (bytes, bytearray)):
+        try:
+            st.audio(st.session_state.saved_audio, format='audio/wav')
 
-        # Save audio file for download
-        audio_path = Path("recorded_audio.wav")
-        with open(audio_path, 'wb') as f:
-            st.session_state.saved_audio.tofile(f)
+            # Save audio file for download
+            audio_path = Path("recorded_audio.wav")
+            with open(audio_path, 'wb') as f:
+                st.session_state.saved_audio.tofile(f)
 
-        with open(audio_path, 'rb') as f:
-            st.download_button(
-                "Download Audio",
-                f,
-                file_name="recorded_audio.wav",
-                mime="audio/wav"
-            )
+            with open(audio_path, 'rb') as f:
+                st.download_button(
+                    "Download Audio",
+                    f,
+                    file_name="recorded_audio.wav",
+                    mime="audio/wav"
+                )
+        except Exception as e:
+            st.error("Error processing audio data for download")
 
     if st.session_state.get('final_transcript'):
         st.download_button(
