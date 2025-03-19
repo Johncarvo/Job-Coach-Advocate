@@ -156,10 +156,15 @@ else:
     webrtc_streamer(
         key="audio-recorder",
         audio_frame_callback=audio_frame_callback,
-        frontend_rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-        server_rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+        rtc_configuration={
+            "iceServers": [
+                {"urls": ["stun:stun.l.google.com:19302"]},
+                {"urls": ["stun:stun1.l.google.com:19302"]}
+            ]
+        },
         media_stream_constraints={"video": False, "audio": True},
-        async_processing=True
+        async_processing=True,
+        sendback_audio=False
     )
 
     if 'candidate_info' in st.session_state:
