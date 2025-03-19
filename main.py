@@ -99,11 +99,7 @@ else:
     class AudioProcessor:
         def __init__(self):
             self.text_buffer = ""
-            config = aai.TranscriptionConfig(
-                speaker_labels=True,
-                speech_model=aai.SpeechModel.nano
-            )
-            self.transcriber = aai.Transcriber(config=config)
+            self.transcriber = aai.Transcriber()
             self.audio_chunks = []
             self.accumulated_data = bytearray()
 
@@ -125,7 +121,7 @@ else:
                             f.write(self.accumulated_data)
 
                         try:
-                            result = self.transcriber.transcribe(str(temp_path))
+                            result = self.transcriber.transcribe(filename=str(temp_path))
                             if result.text and result.text != self.text_buffer:
                                 self.text_buffer = result.text
                                 st.session_state.current_transcription = result.text
