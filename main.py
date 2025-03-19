@@ -89,10 +89,21 @@ else:
                     st.session_state.saved_audio = processor.accumulated_data
                 st.rerun()
 
-    if st.session_state.recording:
-        st.write("🔴 Recording in progress...")
-    else:
-        st.write("Click Start Recording to begin")
+    # Recording status indicators
+    status_col1, status_col2 = st.columns([3, 1])
+    with status_col1:
+        if st.session_state.recording:
+            st.markdown("### 🔴 Recording in progress...")
+            if hasattr(processor, 'accumulated_data'):
+                # Show buffer fill status
+                buffer_progress = len(processor.accumulated_data) / 32000  # Based on our chunk size
+                st.progress(min(1.0, buffer_progress), "Buffer")
+        else:
+            st.markdown("### Click Start Recording to begin")
+    
+    with status_col2:
+        if st.session_state.recording:
+            st.metric("Buffer Size", f"{len(processor.accumulated_data)/1000:.1f}k")
 
     # Create placeholders for audio visualization and transcription
     audio_display = st.empty()
