@@ -5,6 +5,8 @@ import numpy as np
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from streamlit_webrtc import webrtc_streamer
+import av
 
 load_dotenv()
 
@@ -82,11 +84,6 @@ else:
     else:
         st.write("Click Start Recording to begin")
 
-    # Only import WebRTC components in development
-    if os.environ.get('DEPLOYED') != 'true':
-        from streamlit_webrtc import webrtc_streamer
-        import av
-
     # Create placeholders for audio visualization and transcription
     audio_display = st.empty()
     transcription_container = st.container()
@@ -153,11 +150,10 @@ else:
         if edited_text != st.session_state.current_transcription:
             st.session_state.candidate_info = edited_text
 
-    if os.environ.get('DEPLOYED') != 'true':
-        webrtc_streamer(
-            key="audio-recorder",
-            audio_frame_callback=audio_frame_callback,
-            rtc_configuration={
+    webrtc_streamer(
+        key="audio-recorder",
+        audio_frame_callback=audio_frame_callback,
+        rtc_configuration={
                 "iceServers": [
                     {"urls": ["stun:stun.l.google.com:19302"]},
                     {"urls": ["stun1.l.google.com:19302"]}
