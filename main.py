@@ -18,26 +18,38 @@ candidate_info = None
 if input_method == "Text":
     candidate_info = st.text_area("Enter candidate information:", height=200)
 else:
-    # File upload
-    audio_file = st.file_uploader("Upload audio file", type=['mp3', 'wav'])
+    st.write("Click start to begin recording")
     
-    if audio_file:
-        # Save uploaded file temporarily
+    if 'audio_buffer' not in st.session_state:
+        st.session_state.audio_buffer = []
+    
+    aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
+    
+    start = st.button("Start Recording")
+    stop = st.button("Stop Recording")
+    
+    if start:
+        st.session_state.audio_buffer = []
+        audio_input = st.empty()
+        audio = audio_input.audio_recorder()
+        if audio:
+            st.session_state.audio_buffer.append(audio)
+            
+    if stop and st.session_state.audio_buffer:
         temp_path = Path("temp.wav")
         with open(temp_path, "wb") as f:
-            f.write(audio_file.getbuffer())
+            for audio in st.session_state.audio_buffer:
+                f.write(audio)
         
-        # Transcribe with AssemblyAI
-        aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
         transcriber = aai.Transcriber()
         transcript = transcriber.transcribe(str(temp_path))
         
         if transcript.text:
             st.write("Transcription:", transcript.text)
             candidate_info = transcript.text
-        
-        # Cleanup
+            
         temp_path.unlink()
+        st.session_state.audio_buffer = []
 
 if candidate_info and st.button("Generate Profile"):
     client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
