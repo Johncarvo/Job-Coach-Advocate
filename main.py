@@ -29,17 +29,20 @@ else:
     stop = st.button("Stop Recording")
     
     if start:
-        st.session_state.audio_buffer = []
-        audio_input = st.empty()
-        audio = audio_input.audio_recorder()
-        if audio:
-            st.session_state.audio_buffer.append(audio)
+        audio_bytes = st.microphone_input("Click to record", type="audio")
+        if audio_bytes:
+            temp_path = Path("temp.wav")
+            with open(temp_path, "wb") as f:
+                f.write(audio_bytes)
             
-    if stop and st.session_state.audio_buffer:
-        temp_path = Path("temp.wav")
-        with open(temp_path, "wb") as f:
-            for audio in st.session_state.audio_buffer:
-                f.write(audio)
+            transcriber = aai.Transcriber()
+            transcript = transcriber.transcribe(str(temp_path))
+            
+            if transcript.text:
+                st.write("Transcription:", transcript.text)
+                candidate_info = transcript.text
+                
+            temp_path.unlink()
         
         transcriber = aai.Transcriber()
         transcript = transcriber.transcribe(str(temp_path))
