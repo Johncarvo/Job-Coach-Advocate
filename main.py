@@ -5,8 +5,6 @@ import numpy as np
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-from streamlit_webrtc import webrtc_streamer, WebRtcMode
-import av
 
 load_dotenv()
 
@@ -17,46 +15,37 @@ input_method = st.radio("Choose input method:", ["Text", "Audio"])
 
 candidate_info = None
 
-def generate_job_profile(candidate_info):
-    if not candidate_info:
-        st.error("Candidate information is missing!")
-        return
-
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    client = openai.OpenAI()
-    system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
-    1. Professional Summary
-    2. Key Skills
-    3. Work Experience
-    4. Education
-    5. Certifications (if any)
-    6. Technical Skills (if applicable)
-
-    Format the output in markdown."""
-
-    response = client.chat.completions.create(
-        model="gpt-4-turbo-preview",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": f"Create a structured job profile from this information: {candidate_info}"}
-        ]
-    )
-
-    st.markdown(response.choices[0].message.content)
-
-    # Add download button for the profile
-    st.download_button(
-        label="Download Profile",
-        data=response.choices[0].message.content,
-        file_name="job_profile.md",
-        mime="text/markdown"
-    )
-
 if input_method == "Text":
     candidate_info = st.text_area("Enter candidate information:", height=200)
     if candidate_info and st.button("Generate Profile"):
-        generate_job_profile(candidate_info)
+        client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
+        system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
+        1. Professional Summary
+        2. Key Skills
+        3. Work Experience
+        4. Education
+        5. Certifications (if any)
+        6. Technical Skills (if applicable)
 
+        Format the output in markdown."""
+
+        response = client.chat.completions.create(
+            model="gpt-4-turbo-preview",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Create a structured job profile from this information: {candidate_info}"}
+            ]
+        )
+
+        st.markdown(response.choices[0].message.content)
+
+        # Add download button for the profile
+        st.download_button(
+            label="Download Profile",
+            data=response.choices[0].message.content,
+            file_name="job_profile.md",
+            mime="text/markdown"
+        )
 else:
     # Initialize session state variables
     if 'recording' not in st.session_state:
@@ -64,12 +53,6 @@ else:
         st.session_state.audio_buffer = []
         st.session_state.mic_access_granted = False
         st.session_state.default_audio_device = None
-        st.session_state.processor = None
-
-    # Initialize processor if not already done
-    if st.session_state.processor is None:
-        st.session_state.processor = AudioProcessor()
-    processor = st.session_state.processor
 
     # Store microphone permissions if granted
     def on_mic_access(status):
@@ -90,26 +73,15 @@ else:
         if st.session_state.recording:
             if st.button("Stop Recording"):
                 st.session_state.recording = False
-                # Save any remaining audio data before stopping
-                if hasattr(st.session_state, 'processor') and st.session_state.processor.accumulated_data:
-                    st.session_state.saved_audio = st.session_state.processor.accumulated_data
                 st.rerun()
 
-    # Recording status indicators
-    status_col1, status_col2 = st.columns([3, 1])
-    with status_col1:
-        if st.session_state.recording:
-            st.markdown("### 🔴 Recording in progress...")
-            if hasattr(st.session_state, 'processor') and st.session_state.processor.accumulated_data:
-                # Show buffer fill status
-                buffer_progress = len(st.session_state.processor.accumulated_data) / 32000  # Based on our chunk size
-                st.progress(min(1.0, buffer_progress), "Buffer")
-        else:
-            st.markdown("### Click Start Recording to begin")
-    
-    with status_col2:
-        if st.session_state.recording:
-            st.metric("Buffer Size", f"{len(processor.accumulated_data)/1000:.1f}k")
+    if st.session_state.recording:
+        st.write("🔴 Recording in progress...")
+    else:
+        st.write("Click Start Recording to begin")
+
+    from streamlit_webrtc import webrtc_streamer
+    import av
 
     # Create placeholders for audio visualization and transcription
     audio_display = st.empty()
@@ -123,7 +95,11 @@ else:
     class AudioProcessor:
         def __init__(self):
             self.text_buffer = ""
-            self.transcriber = aai.Transcriber()
+            config = aai.TranscriptionConfig(
+                speaker_labels=True,
+                speech_model=aai.SpeechModel.nano
+            )
+            self.transcriber = aai.Transcriber(config=config)
             self.audio_chunks = []
             self.accumulated_data = bytearray()
 
@@ -136,7 +112,7 @@ else:
                     audio_display.progress(min(1.0, amplitude * 20))
 
                     # Accumulate audio data
-                    self.accumulated_data += bytearray(audio_data.tobytes())
+                    self.accumulated_data.extend(audio_data.tobytes())
 
                     # Every few seconds, transcribe accumulated audio
                     if len(self.accumulated_data) >= 32000:  # Process chunks of ~2 seconds
@@ -145,7 +121,7 @@ else:
                             f.write(self.accumulated_data)
 
                         try:
-                            result = self.transcriber.transcribe(filename=str(temp_path))
+                            result = self.transcriber.transcribe(str(temp_path))
                             if result.text and result.text != self.text_buffer:
                                 self.text_buffer = result.text
                                 st.session_state.current_transcription = result.text
@@ -165,34 +141,7 @@ else:
     processor = AudioProcessor()
 
     def audio_frame_callback(frame):
-        audio_data = frame.to_ndarray()
-        if audio_data.size > 0:
-            processor.accumulated_data += bytearray(audio_data.tobytes())  # Append to audio buffer
-            
-            # Process accumulated data when enough is collected
-            if len(processor.accumulated_data) >= 32000:
-                temp_path = Path("temp.wav")
-                with open(temp_path, 'wb') as f:
-                    f.write(processor.accumulated_data)
-
-                try:
-                    result = processor.transcriber.transcribe(filename=str(temp_path))
-                    if result.text and result.text != processor.text_buffer:
-                        processor.text_buffer = result.text
-                        st.session_state.current_transcription = result.text
-                        st.session_state.candidate_info = result.text
-                        st.session_state.saved_audio = processor.accumulated_data
-                except Exception as e:
-                    st.error(f"Transcription error: {str(e)}")
-
-                temp_path.unlink()
-                processor.accumulated_data = bytearray()
-            
-            # Update audio visualization
-            amplitude = np.abs(audio_data).mean()
-            audio_display.progress(min(1.0, amplitude * 20))
-            
-        return frame
+        return processor.process(frame)
 
     # Add editable transcription
     if st.session_state.current_transcription:
@@ -204,47 +153,41 @@ else:
         if edited_text != st.session_state.current_transcription:
             st.session_state.candidate_info = edited_text
 
-    webrtc_ctx = webrtc_streamer(
+    webrtc_streamer(
         key="audio-recorder",
-        mode=WebRtcMode.SENDONLY,
         audio_frame_callback=audio_frame_callback,
+        rtc_configuration={
+            "iceServers": [
+                {"urls": ["stun:stun.l.google.com:19302"]},
+                {"urls": ["stun:stun1.l.google.com:19302"]}
+            ]
+        },
         media_stream_constraints={"video": False, "audio": True},
         async_processing=True,
-        rtc_configuration={
-            "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-        }
+        sendback_audio=False,
+        video_html_attrs={"style": {"width": "0", "height": "0"}},
+        audio_html_attrs={"style": {"width": "0", "height": "0"}},
     )
 
     if 'candidate_info' in st.session_state:
         candidate_info = st.session_state.candidate_info
 
-    # Add download options for audio and transcript
-    if st.session_state.get('saved_audio'):
-        try:
-            # Ensure we have valid audio data
-            audio_data = bytes(st.session_state.saved_audio) if isinstance(st.session_state.saved_audio, bytearray) else st.session_state.saved_audio
-            
-            if audio_data:
-                # Create audio player
-                st.write("### 🎵 Recorded Audio")
-                st.audio(audio_data, format='audio/wav')
+# Add download options for audio and transcript
+    if st.session_state.get('saved_audio') is not None:
+        st.audio(st.session_state.saved_audio, format='audio/wav')
 
-                # Save audio file for download
-                audio_path = Path("recorded_audio.wav")
-                audio_path.write_bytes(audio_data)  # More reliable way to write binary data
+        # Save audio file for download
+        audio_path = Path("recorded_audio.wav")
+        with open(audio_path, 'wb') as f:
+            st.session_state.saved_audio.tofile(f)
 
-                # Create download button
-                with open(audio_path, 'rb') as f:
-                    audio_bytes = f.read()
-                    st.download_button(
-                        "💾 Download Audio",
-                        audio_bytes,
-                        file_name="recorded_audio.wav",
-                        mime="audio/wav",
-                        help="Click to download the recorded audio"
-                    )
-        except Exception as e:
-            st.error(f"Error saving audio: {str(e)}")
+        with open(audio_path, 'rb') as f:
+            st.download_button(
+                "Download Audio",
+                f,
+                file_name="recorded_audio.wav",
+                mime="audio/wav"
+            )
 
     if st.session_state.get('final_transcript'):
         st.download_button(
@@ -254,18 +197,44 @@ else:
             mime="text/plain"
         )
 
-    # Add transcript summary using OpenAI GPT
+    # Add transcript summary using LLM
     if st.session_state.get('current_transcription'):
         if st.button("Generate Summary"):
-            summary_response = client.chat.completions.create(
-                model="gpt-4-turbo-preview",
-                messages=[
-                    {"role": "system", "content": "Summarize this candidate's job profile."},
-                    {"role": "user", "content": st.session_state.current_transcription}
-                ]
+            prompt = "Provide a brief professional summary of the candidate based on this transcript."
+            result = processor.transcriber.lemur.task(
+                prompt, 
+                final_model=aai.LemurModel.claude3_5_sonnet
             )
             st.write("### Summary")
-            st.write(summary_response.choices[0].message.content)
+            st.write(result.response)
 
     if candidate_info and st.button("Generate Profile"):
-        generate_job_profile(candidate_info)
+        client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
+
+        system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
+        1. Professional Summary
+        2. Key Skills
+        3. Work Experience
+        4. Education
+        5. Certifications (if any)
+        6. Technical Skills (if applicable)
+
+        Format the output in markdown."""
+
+        response = client.chat.completions.create(
+            model="gpt-4-turbo-preview",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Create a structured job profile from this information: {candidate_info}"}
+            ]
+        )
+
+        st.markdown(response.choices[0].message.content)
+
+        # Add download button for the profile
+        st.download_button(
+            label="Download Profile",
+            data=response.choices[0].message.content,
+            file_name="job_profile.md",
+            mime="text/markdown"
+        )
