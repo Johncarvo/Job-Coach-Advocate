@@ -1,0 +1,188 @@
+index.DmrHunjf.js:41 Unrecognized feature: 'ambient-light-sensor'.
+je @ index.DmrHunjf.js:41
+bp @ index.DmrHunjf.js:48
+xc @ index.DmrHunjf.js:48
+Ic @ index.DmrHunjf.js:48
+Ap @ index.DmrHunjf.js:48
+C1 @ index.DmrHunjf.js:48
+zc @ index.DmrHunjf.js:48
+Go @ index.DmrHunjf.js:46
+yo @ index.DmrHunjf.js:48
+enqueueSetState @ index.DmrHunjf.js:46
+Le.setState @ index.DmrHunjf.js:10
+(anonymous) @ index.DmrHunjf.js:811
+setTimeout
+App.handleDeltaMsg @ index.DmrHunjf.js:811
+delta @ index.DmrHunjf.js:811
+Me @ index.DmrHunjf.js:811
+App.handleMessage @ index.DmrHunjf.js:811
+handleMessage @ index.DmrHunjf.js:762
+await in handleMessage
+(anonymous) @ index.DmrHunjf.js:762
+index.DmrHunjf.js:41 Unrecognized feature: 'battery'.
+je @ index.DmrHunjf.js:41
+bp @ index.DmrHunjf.js:48
+xc @ index.DmrHunjf.js:48
+Ic @ index.DmrHunjf.js:48
+Ap @ index.DmrHunjf.js:48
+C1 @ index.DmrHunjf.js:48
+zc @ index.DmrHunjf.js:48
+Go @ index.DmrHunjf.js:46
+yo @ index.DmrHunjf.js:48
+enqueueSetState @ index.DmrHunjf.js:46
+Le.setState @ index.DmrHunjf.js:10
+(anonymous) @ index.DmrHunjf.js:811
+setTimeout
+App.handleDeltaMsg @ index.DmrHunjf.js:811
+delta @ index.DmrHunjf.js:811
+Me @ index.DmrHunjf.js:811
+App.handleMessage @ index.DmrHunjf.js:811
+handleMessage @ index.DmrHunjf.js:762
+await in handleMessage
+(anonymous) @ index.DmrHunjf.js:762
+index.DmrHunjf.js:41 Unrecognized feature: 'document-domain'.
+je @ index.DmrHunjf.js:41
+bp @ index.DmrHunjf.js:48
+xc @ index.DmrHunjf.js:48
+Ic @ index.DmrHunjf.js:48
+Ap @ index.DmrHunjf.js:48
+C1 @ index.DmrHunjf.js:48
+zc @ index.DmrHunjf.js:48
+Go @ index.DmrHunjf.js:46
+yo @ index.DmrHunjf.js:48
+enqueueSetState @ index.DmrHunjf.js:46
+Le.setState @ index.DmrHunjf.js:10
+(anonymous) @ index.DmrHunjf.js:811
+setTimeout
+App.handleDeltaMsg @ index.DmrHunjf.js:811
+delta @ index.DmrHunjf.js:811
+Me @ index.DmrHunjf.js:811
+App.handleMessage @ index.DmrHunjf.js:811
+handleMessage @ index.DmrHunjf.js:762
+await in handleMessage
+(anonymous) @ index.DmrHunjf.js:762
+index.DmrHunjf.js:41 Unrecognized feature: 'layout-animations'.
+je @ index.DmrHunjf.js:41
+bp @ index.DmrHunjf.js:48
+xc @ index.DmrHunjf.js:48
+Ic @ index.DmrHunjf.js:48
+Ap @ index.DmrHunjf.js:48
+C1 @ index.DmrHunjf.js:48
+zc @ index.DmrHunjf.js:48
+Go @ index.DmrHunjf.js:46
+yo @ index.DmrHunjf.js:48
+enqueueSetState @ index.DmrHunjf.js:46
+Le.setState @ index.DmrHunjf.js:10
+(anonymous) @ index.DmrHunjf.js:811
+setTimeout
+App.handleDeltaMsg @ index.DmrHunjf.js:811
+delta @ index.DmrHunjf.js:811
+Me @ index.DmrHunjf.js:811
+App.handleMessage @ index.DmrHunjf.js:811
+handleMessage @ index.DmrHunjf.js:762
+await in handleMessage
+(anonymous) @ index.DmrHunjf.js:762
+index.DmrHunjf.js:41 Unrecognized feature: 'legacy-image-formats'.
+je @ index.DmrHunjf.js:41
+bp @ index.DmrHunjf.js:48
+xc @ index.DmrHunjf.js:48
+Ic @ index.DmrHunjf.js:48
+Ap @ index.DmrHunjf.js:48
+C1 @ index.DmrHunjf.js:48
+zc @ index.DmrHunjf.js:48
+Go @ index.DmrHunjf.js:46
+yo @ index.DmrHunjf.js:48
+enqueueSetState @ index.DmrHunjf.js:46
+Le.setState @ index.DmrHunjf.js:10
+(anonymous) @ index.DmrHunjf.js:811
+setTimeout
+App.handleDeltaMsg @ index.DmrHunjf.js:811
+delta @ index.DmrHunjf.js:811
+Me @ index.DmrHunjf.js:811
+App.handleMessage @ index.DmrHunjf.js:811
+handleMessage @ index.DmrHunjf.js:762
+await in handleMessage
+(anonymous) @ index.DmrHunjf.js:762
+index.DmrHunjf.js:41 Unrecognized feature: 'oversized-images'.
+je @ index.DmrHunjf.js:41
+bp @ index.DmrHunjf.js:48
+xc @ index.DmrHunjf.js:48
+Ic @ index.DmrHunjf.js:48
+Ap @ index.DmrHunjf.js:48
+C1 @ index.DmrHunjf.js:48
+zc @ index.DmrHunjf.js:48
+Go @ index.DmrHunjf.js:46
+yo @ index.DmrHunjf.js:48
+enqueueSetState @ index.DmrHunjf.js:46
+Le.setState @ index.DmrHunjf.js:10
+(anonymous) @ index.DmrHunjf.js:811
+setTimeout
+App.handleDeltaMsg @ index.DmrHunjf.js:811
+delta @ index.DmrHunjf.js:811
+Me @ index.DmrHunjf.js:811
+App.handleMessage @ index.DmrHunjf.js:811
+handleMessage @ index.DmrHunjf.js:762
+await in handleMessage
+(anonymous) @ index.DmrHunjf.js:762
+index.DmrHunjf.js:41 Unrecognized feature: 'vr'.
+je @ index.DmrHunjf.js:41
+bp @ index.DmrHunjf.js:48
+xc @ index.DmrHunjf.js:48
+Ic @ index.DmrHunjf.js:48
+Ap @ index.DmrHunjf.js:48
+C1 @ index.DmrHunjf.js:48
+zc @ index.DmrHunjf.js:48
+Go @ index.DmrHunjf.js:46
+yo @ index.DmrHunjf.js:48
+enqueueSetState @ index.DmrHunjf.js:46
+Le.setState @ index.DmrHunjf.js:10
+(anonymous) @ index.DmrHunjf.js:811
+setTimeout
+App.handleDeltaMsg @ index.DmrHunjf.js:811
+delta @ index.DmrHunjf.js:811
+Me @ index.DmrHunjf.js:811
+App.handleMessage @ index.DmrHunjf.js:811
+handleMessage @ index.DmrHunjf.js:762
+await in handleMessage
+(anonymous) @ index.DmrHunjf.js:762
+index.DmrHunjf.js:41 Unrecognized feature: 'wake-lock'.
+je @ index.DmrHunjf.js:41
+bp @ index.DmrHunjf.js:48
+xc @ index.DmrHunjf.js:48
+Ic @ index.DmrHunjf.js:48
+Ap @ index.DmrHunjf.js:48
+C1 @ index.DmrHunjf.js:48
+zc @ index.DmrHunjf.js:48
+Go @ index.DmrHunjf.js:46
+yo @ index.DmrHunjf.js:48
+enqueueSetState @ index.DmrHunjf.js:46
+Le.setState @ index.DmrHunjf.js:10
+(anonymous) @ index.DmrHunjf.js:811
+setTimeout
+App.handleDeltaMsg @ index.DmrHunjf.js:811
+delta @ index.DmrHunjf.js:811
+Me @ index.DmrHunjf.js:811
+App.handleMessage @ index.DmrHunjf.js:811
+handleMessage @ index.DmrHunjf.js:762
+await in handleMessage
+(anonymous) @ index.DmrHunjf.js:762
+/component/streamlit_webrtc.component.webrtc_streamer/index.html?streamlitUrl=https%3A%2F%2Fb4c511d3-b86a-4d19-baa9-f86817a8b5d0-00-44c3myt81814.picard.replit.dev%2F:1 An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+Console.js:61 RTCConfiguration: {iceServers: Array(1)}
+Console.js:61 MediaStreamConstraints: {video: false, audio: {…}}
+Console.js:61 transceivers [RTCRtpTransceiver]
+Console.js:61 Created offer: {sdp: 'v=0\r\no=- 3637847102690346351 2 IN IP4 127.0.0.1\r\ns…ce098e2159 cd799591-2e77-4de7-b75b-dccfe3ca3d7a\r\n', type: 'offer'}
+Console.js:61 Wait for ICE gethering...
+Console.js:61 Receive answer sdpOffer {sdp: 'v=0\r\no=- 3951402354 3951402354 IN IP4 0.0.0.0\r\ns=-…C:77:B3:00:66:85:13:21:23:83:2F\r\na=setup:active\r\n', type: 'answer'}
+Console.js:61 iceconnectionstatechange checking
+Console.js:61 Remote description is set
+Console.js:61 Send SDP offer RTCSessionDescription {type: 'offer', sdp: 'v=0\r\no=- 3637847102690346351 2 IN IP4 127.0.0.1\r\ns…ce098e2159 cd799591-2e77-4de7-b75b-dccfe3ca3d7a\r\n'}
+Console.js:61 RTCConfiguration: {iceServers: Array(1)}
+Console.js:61 MediaStreamConstraints: {video: false, audio: {…}}
+Console.js:61 transceivers [RTCRtpTransceiver]
+Console.js:61 Created offer: {sdp: 'v=0\r\no=- 6042221413859497171 2 IN IP4 127.0.0.1\r\ns…d59a654260 56cc4a92-e9aa-4c5d-a7e5-20fb955389e1\r\n', type: 'offer'}
+Console.js:61 Wait for ICE gethering...
+Console.js:61 Receive answer sdpOffer {sdp: 'v=0\r\no=- 3951402381 3951402381 IN IP4 0.0.0.0\r\ns=-…D:34:7C:51:8E:9B:DE:02:68:1F:D6\r\na=setup:active\r\n', type: 'answer'}
+Console.js:61 iceconnectionstatechange checking
+Console.js:61 Remote description is set
+Console.js:61 Send SDP offer RTCSessionDescription {type: 'offer', sdp: 'v=0\r\no=- 6042221413859497171 2 IN IP4 127.0.0.1\r\ns…d59a654260 56cc4a92-e9aa-4c5d-a7e5-20fb955389e1\r\n'}
+Console.js:61 iceconnectionstatechange disconnected
