@@ -30,12 +30,12 @@ else:
             if st.button("Start Recording"):
                 st.session_state.recording = True
                 st.session_state.audio_buffer = []
-                st.experimental_rerun()
+                st.rerun()
     with col2:
         if st.session_state.recording:
             if st.button("Stop Recording"):
                 st.session_state.recording = False
-                st.experimental_rerun()
+                st.rerun()
 
     if st.session_state.recording:
         st.write("🔴 Recording in progress...")
