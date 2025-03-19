@@ -84,6 +84,9 @@ else:
         if st.session_state.recording:
             if st.button("Stop Recording"):
                 st.session_state.recording = False
+                # Save any remaining audio data before stopping
+                if processor.accumulated_data and len(processor.accumulated_data) > 0:
+                    st.session_state.saved_audio = processor.accumulated_data
                 st.rerun()
 
     if st.session_state.recording:
