@@ -45,27 +45,34 @@ else:
         def __init__(self):
             self.text_buffer = ""
             self.transcriber = aai.Transcriber()
-            
+            self.audio_chunks = []
+
         def process(self, frame):
             try:
                 audio_data = frame.to_ndarray()
                 if audio_data.size > 0:
                     # Update audio visualization
                     amplitude = np.abs(audio_data).mean()
-                    audio_display.progress(min(1.0, amplitude * 5))
+                    audio_display.progress(min(1.0, amplitude * 20))
                     
-                    # Save and transcribe
-                    temp_path = Path("temp.wav")
-                    audio_data.tofile(str(temp_path))
+                    # Save audio chunk
+                    self.audio_chunks.append(audio_data)
                     
-                    result = self.transcriber.transcribe(str(temp_path))
-                    if result.text and result.text != self.text_buffer:
-                        self.text_buffer = result.text
-                        st.session_state.current_transcription = result.text
-                        transcription_text.markdown(f"**Current transcription:**\n{result.text}")
-                        st.session_state.candidate_info = result.text
-                    
-                    temp_path.unlink()
+                    # Every 2 seconds, transcribe accumulated audio
+                    if len(self.audio_chunks) >= 20:  # Assuming 10 frames per second
+                        combined_audio = np.concatenate(self.audio_chunks)
+                        temp_path = Path("temp.wav")
+                        combined_audio.tofile(str(temp_path))
+                        
+                        result = self.transcriber.transcribe(str(temp_path))
+                        if result.text and result.text != self.text_buffer:
+                            self.text_buffer = result.text
+                            st.session_state.current_transcription = result.text
+                            transcription_text.markdown(f"**Current transcription:**\n{result.text}")
+                            st.session_state.candidate_info = result.text
+                        
+                        temp_path.unlink()
+                        self.audio_chunks = []
                 return frame
             except Exception as e:
                 st.error(f"Error processing audio: {str(e)}")
