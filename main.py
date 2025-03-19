@@ -80,8 +80,10 @@ else:
     else:
         st.write("Click Start Recording to begin")
 
-    from streamlit_webrtc import webrtc_streamer
-    import av
+    # Only import WebRTC components in development
+    if os.environ.get('DEPLOYED') != 'true':
+        from streamlit_webrtc import webrtc_streamer
+        import av
 
     # Create placeholders for audio visualization and transcription
     audio_display = st.empty()
@@ -153,26 +155,25 @@ else:
         if edited_text != st.session_state.current_transcription:
             st.session_state.candidate_info = edited_text
 
-    webrtc_streamer(
-        key="audio-recorder",
-        audio_frame_callback=audio_frame_callback,
-        rtc_configuration={
-            "iceServers": [
-                {"urls": ["stun:stun.l.google.com:19302"]},
-                {"urls": ["stun:stun1.l.google.com:19302"]}
-            ]
-        },
-        media_stream_constraints={"video": False, "audio": True},
-        async_processing=True,
-        sendback_audio=False,
-        video_html_attrs={"style": {"width": "0", "height": "0"}},
-        audio_html_attrs={"style": {"width": "0", "height": "0"}},
-    )
+    if os.environ.get('DEPLOYED') != 'true':
+        webrtc_streamer(
+            key="audio-recorder",
+            audio_frame_callback=audio_frame_callback,
+            rtc_configuration={
+                "iceServers": [
+                    {"urls": ["stun:stun.l.google.com:19302"]},
+                    {"urls": ["stun1.l.google.com:19302"]}
+                ]
+            },
+            media_stream_constraints={"video": False, "audio": True},
+            async_processing=True,
+            sendback_audio=False
+        )
 
     if 'candidate_info' in st.session_state:
         candidate_info = st.session_state.candidate_info
 
-# Add download options for audio and transcript
+    # Add download options for audio and transcript
     if st.session_state.get('saved_audio') is not None:
         st.audio(st.session_state.saved_audio, format='audio/wav')
 
