@@ -17,38 +17,45 @@ input_method = st.radio("Choose input method:", ["Text", "Audio"])
 
 candidate_info = None
 
+def generate_job_profile(candidate_info):
+    if not candidate_info:
+        st.error("Candidate information is missing!")
+        return
+
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    client = openai.OpenAI()
+    system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
+    1. Professional Summary
+    2. Key Skills
+    3. Work Experience
+    4. Education
+    5. Certifications (if any)
+    6. Technical Skills (if applicable)
+
+    Format the output in markdown."""
+
+    response = client.chat.completions.create(
+        model="gpt-4-turbo-preview",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Create a structured job profile from this information: {candidate_info}"}
+        ]
+    )
+
+    st.markdown(response.choices[0].message.content)
+
+    # Add download button for the profile
+    st.download_button(
+        label="Download Profile",
+        data=response.choices[0].message.content,
+        file_name="job_profile.md",
+        mime="text/markdown"
+    )
+
 if input_method == "Text":
     candidate_info = st.text_area("Enter candidate information:", height=200)
     if candidate_info and st.button("Generate Profile"):
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-        client = openai.OpenAI()
-        system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
-        1. Professional Summary
-        2. Key Skills
-        3. Work Experience
-        4. Education
-        5. Certifications (if any)
-        6. Technical Skills (if applicable)
-
-        Format the output in markdown."""
-
-        response = client.chat.completions.create(
-            model="gpt-4-turbo-preview",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Create a structured job profile from this information: {candidate_info}"}
-            ]
-        )
-
-        st.markdown(response.choices[0].message.content)
-
-        # Add download button for the profile
-        st.download_button(
-            label="Download Profile",
-            data=response.choices[0].message.content,
-            file_name="job_profile.md",
-            mime="text/markdown"
-        )
+        generate_job_profile(candidate_info)
 
 else:
     # Initialize session state variables
@@ -209,32 +216,4 @@ else:
             st.write(summary_response.choices[0].message.content)
 
     if candidate_info and st.button("Generate Profile"):
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-        client = openai.OpenAI()
-        system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
-        1. Professional Summary
-        2. Key Skills
-        3. Work Experience
-        4. Education
-        5. Certifications (if any)
-        6. Technical Skills (if applicable)
-
-        Format the output in markdown."""
-
-        response = client.chat.completions.create(
-            model="gpt-4-turbo-preview",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Create a structured job profile from this information: {candidate_info}"}
-            ]
-        )
-
-        st.markdown(response.choices[0].message.content)
-
-        # Add download button for the profile
-        st.download_button(
-            label="Download Profile",
-            data=response.choices[0].message.content,
-            file_name="job_profile.md",
-            mime="text/markdown"
-        )
+        generate_job_profile(candidate_info)
