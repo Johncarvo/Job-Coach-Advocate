@@ -41,25 +41,40 @@ else:
     if 'current_transcription' not in st.session_state:
         st.session_state.current_transcription = ""
 
+    class AudioProcessor:
+        def __init__(self):
+            self.text_buffer = ""
+            self.transcriber = aai.Transcriber()
+            
+        def process(self, frame):
+            try:
+                audio_data = frame.to_ndarray()
+                if audio_data.size > 0:
+                    # Update audio visualization
+                    amplitude = np.abs(audio_data).mean()
+                    audio_display.progress(min(1.0, amplitude * 5))
+                    
+                    # Save and transcribe
+                    temp_path = Path("temp.wav")
+                    audio_data.tofile(str(temp_path))
+                    
+                    result = self.transcriber.transcribe(str(temp_path))
+                    if result.text and result.text != self.text_buffer:
+                        self.text_buffer = result.text
+                        st.session_state.current_transcription = result.text
+                        transcription_text.markdown(f"**Current transcription:**\n{result.text}")
+                        st.session_state.candidate_info = result.text
+                    
+                    temp_path.unlink()
+                return frame
+            except Exception as e:
+                st.error(f"Error processing audio: {str(e)}")
+                return frame
+    
+    processor = AudioProcessor()
+    
     def audio_frame_callback(frame):
-        if frame.to_ndarray().size > 0:
-            # Visualize audio amplitude
-            audio_data = frame.to_ndarray()
-            amplitude = np.abs(audio_data).mean()
-            audio_display.progress(min(1.0, amplitude * 2))
-            
-            temp_path = Path("temp.wav")
-            frame.to_ndarray().tofile(str(temp_path))
-            
-            transcriber = aai.Transcriber()
-            transcript = transcriber.transcribe(str(temp_path))
-            
-            if transcript.text:
-                st.session_state.current_transcription = transcript.text
-                transcription_text.markdown(f"**Current transcription:**\n{transcript.text}")
-                st.session_state.candidate_info = transcript.text
-                
-            temp_path.unlink()
+        return processor.process(frame)
             
     # Add editable transcription
     if st.session_state.current_transcription:
@@ -74,8 +89,11 @@ else:
     webrtc_streamer(
         key="audio-recorder",
         audio_frame_callback=audio_frame_callback,
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-        media_stream_constraints={"video": False, "audio": True}
+        mode=webrtc_streamer.WebRtcMode.SENDRECV,
+        media_stream_constraints={"video": False, "audio": True},
+        async_processing=True,
+        frontend_rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+        server_rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
     )
     
     if 'candidate_info' in st.session_state:
