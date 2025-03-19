@@ -192,16 +192,18 @@ else:
             mime="text/plain"
         )
 
-    # Add transcript summary using LLM
+    # Add transcript summary using OpenAI GPT
     if st.session_state.get('current_transcription'):
         if st.button("Generate Summary"):
-            prompt = "Provide a brief professional summary of the candidate based on this transcript."
-            result = processor.transcriber.lemur.task(
-                prompt, 
-                final_model=aai.LemurModel.claude3_5_sonnet
+            summary_response = client.chat.completions.create(
+                model="gpt-4-turbo-preview",
+                messages=[
+                    {"role": "system", "content": "Summarize this candidate's job profile."},
+                    {"role": "user", "content": st.session_state.current_transcription}
+                ]
             )
             st.write("### Summary")
-            st.write(result.response)
+            st.write(summary_response.choices[0].message.content)
 
     if candidate_info and st.button("Generate Profile"):
         openai.api_key = os.getenv("OPENAI_API_KEY")
