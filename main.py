@@ -10,36 +10,62 @@ load_dotenv()
 
 st.title("AI Job Profile Generator")
 
-# File upload
-audio_file = st.file_uploader("Upload audio file", type=['mp3', 'wav'])
+# Input method selection
+input_method = st.radio("Choose input method:", ["Text", "Audio"])
 
-if audio_file:
-    # Save uploaded file temporarily
-    temp_path = Path("temp.wav")
-    with open(temp_path, "wb") as f:
-        f.write(audio_file.getbuffer())
+candidate_info = None
+
+if input_method == "Text":
+    candidate_info = st.text_area("Enter candidate information:", height=200)
+else:
+    # File upload
+    audio_file = st.file_uploader("Upload audio file", type=['mp3', 'wav'])
     
-    # Transcribe with AssemblyAI
-    aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
-    transcriber = aai.Transcriber()
-    transcript = transcriber.transcribe(str(temp_path))
-    
-    if transcript.text:
-        st.write("Transcription:", transcript.text)
+    if audio_file:
+        # Save uploaded file temporarily
+        temp_path = Path("temp.wav")
+        with open(temp_path, "wb") as f:
+            f.write(audio_file.getbuffer())
         
-        if st.button("Generate Profile"):
-            client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
-            
-            response = client.chat.completions.create(
-                model="gpt-4-turbo-preview",
-                messages=[
-                    {"role": "system", "content": "You are a professional job profile writer."},
-                    {"role": "user", "content": f"Create a structured job profile from this experience: {transcript.text}"}
-                ]
-            )
-            
-            st.write("Generated Profile:")
-            st.write(response.choices[0].message.content)
+        # Transcribe with AssemblyAI
+        aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
+        transcriber = aai.Transcriber()
+        transcript = transcriber.transcribe(str(temp_path))
+        
+        if transcript.text:
+            st.write("Transcription:", transcript.text)
+            candidate_info = transcript.text
+        
+        # Cleanup
+        temp_path.unlink()
 
-    # Cleanup
-    temp_path.unlink()
+if candidate_info and st.button("Generate Profile"):
+    client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
+    
+    system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
+    1. Professional Summary
+    2. Key Skills
+    3. Work Experience
+    4. Education
+    5. Certifications (if any)
+    6. Technical Skills (if applicable)
+    
+    Format the output in markdown."""
+    
+    response = client.chat.completions.create(
+        model="gpt-4-turbo-preview",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Create a structured job profile from this information: {candidate_info}"}
+        ]
+    )
+    
+    st.markdown(response.choices[0].message.content)
+    
+    # Add download button for the profile
+    st.download_button(
+        label="Download Profile",
+        data=response.choices[0].message.content,
+        file_name="job_profile.md",
+        mime="text/markdown"
+    )
