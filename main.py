@@ -18,9 +18,18 @@ candidate_info = None
 if input_method == "Text":
     candidate_info = st.text_area("Enter candidate information:", height=200)
 else:
+    # Initialize session state variables
     if 'recording' not in st.session_state:
         st.session_state.recording = False
         st.session_state.audio_buffer = []
+        st.session_state.mic_access_granted = False
+        st.session_state.default_audio_device = None
+
+    # Store microphone permissions if granted
+    def on_mic_access(status):
+        st.session_state.mic_access_granted = status
+        if status:
+            st.rerun()
 
     aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
 
@@ -64,7 +73,7 @@ else:
             self.transcriber = aai.Transcriber(config=config)
             self.audio_chunks = []
             self.accumulated_data = bytearray()
-            
+
         def process(self, frame):
             try:
                 audio_data = frame.to_ndarray()
@@ -72,16 +81,16 @@ else:
                     # Update audio visualization
                     amplitude = np.abs(audio_data).mean()
                     audio_display.progress(min(1.0, amplitude * 20))
-                    
+
                     # Accumulate audio data
                     self.accumulated_data.extend(audio_data.tobytes())
-                    
+
                     # Every few seconds, transcribe accumulated audio
                     if len(self.accumulated_data) >= 32000:  # Process chunks of ~2 seconds
                         temp_path = Path("temp.wav")
                         with open(temp_path, 'wb') as f:
                             f.write(self.accumulated_data)
-                        
+
                         try:
                             result = self.transcriber.transcribe(str(temp_path))
                             if result.text and result.text != self.text_buffer:
@@ -92,7 +101,7 @@ else:
                                 st.session_state.saved_audio = self.accumulated_data
                         except Exception as e:
                             st.error(f"Transcription error: {str(e)}")
-                        
+
                         temp_path.unlink()
                         self.accumulated_data = bytearray()
                 return frame
