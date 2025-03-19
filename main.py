@@ -64,6 +64,12 @@ else:
         st.session_state.audio_buffer = []
         st.session_state.mic_access_granted = False
         st.session_state.default_audio_device = None
+        st.session_state.processor = None
+
+    # Initialize processor if not already done
+    if st.session_state.processor is None:
+        st.session_state.processor = AudioProcessor()
+    processor = st.session_state.processor
 
     # Store microphone permissions if granted
     def on_mic_access(status):
@@ -85,8 +91,8 @@ else:
             if st.button("Stop Recording"):
                 st.session_state.recording = False
                 # Save any remaining audio data before stopping
-                if processor.accumulated_data and len(processor.accumulated_data) > 0:
-                    st.session_state.saved_audio = processor.accumulated_data
+                if hasattr(st.session_state, 'processor') and st.session_state.processor.accumulated_data:
+                    st.session_state.saved_audio = st.session_state.processor.accumulated_data
                 st.rerun()
 
     # Recording status indicators
@@ -94,9 +100,9 @@ else:
     with status_col1:
         if st.session_state.recording:
             st.markdown("### 🔴 Recording in progress...")
-            if hasattr(processor, 'accumulated_data'):
+            if hasattr(st.session_state, 'processor') and st.session_state.processor.accumulated_data:
                 # Show buffer fill status
-                buffer_progress = len(processor.accumulated_data) / 32000  # Based on our chunk size
+                buffer_progress = len(st.session_state.processor.accumulated_data) / 32000  # Based on our chunk size
                 st.progress(min(1.0, buffer_progress), "Buffer")
         else:
             st.markdown("### Click Start Recording to begin")
