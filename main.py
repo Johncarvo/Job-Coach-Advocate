@@ -18,7 +18,8 @@ candidate_info = None
 if input_method == "Text":
     candidate_info = st.text_area("Enter candidate information:", height=200)
     if candidate_info and st.button("Generate Profile"):
-        client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        client = openai.OpenAI()
         system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
         1. Professional Summary
         2. Key Skills
@@ -46,6 +47,7 @@ if input_method == "Text":
             file_name="job_profile.md",
             mime="text/markdown"
         )
+
 else:
     # Initialize session state variables
     if 'recording' not in st.session_state:
@@ -210,8 +212,8 @@ else:
             st.write(result.response)
 
     if candidate_info and st.button("Generate Profile"):
-        client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
-
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        client = openai.OpenAI()
         system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
         1. Professional Summary
         2. Key Skills
