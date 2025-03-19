@@ -164,7 +164,9 @@ else:
         },
         media_stream_constraints={"video": False, "audio": True},
         async_processing=True,
-        sendback_audio=False
+        sendback_audio=False,
+        video_html_attrs={"style": {"width": "0", "height": "0"}},
+        audio_html_attrs={"style": {"width": "0", "height": "0"}},
     )
 
     if 'candidate_info' in st.session_state:
