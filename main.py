@@ -18,15 +18,29 @@ candidate_info = None
 if input_method == "Text":
     candidate_info = st.text_area("Enter candidate information:", height=200)
 else:
-    st.write("Click start to begin recording")
-
-    if 'audio_buffer' not in st.session_state:
+    if 'recording' not in st.session_state:
+        st.session_state.recording = False
         st.session_state.audio_buffer = []
 
     aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
 
-    start = st.button("Start Recording")
-    stop = st.button("Stop Recording")
+    col1, col2 = st.columns(2)
+    with col1:
+        if not st.session_state.recording:
+            if st.button("Start Recording"):
+                st.session_state.recording = True
+                st.session_state.audio_buffer = []
+                st.experimental_rerun()
+    with col2:
+        if st.session_state.recording:
+            if st.button("Stop Recording"):
+                st.session_state.recording = False
+                st.experimental_rerun()
+
+    if st.session_state.recording:
+        st.write("🔴 Recording in progress...")
+    else:
+        st.write("Click Start Recording to begin")
 
     from streamlit_webrtc import webrtc_streamer
     import av
