@@ -57,10 +57,14 @@ else:
     class AudioProcessor:
         def __init__(self):
             self.text_buffer = ""
-            self.transcriber = aai.Transcriber()
+            config = aai.TranscriptionConfig(
+                speaker_labels=True,
+                speech_model=aai.SpeechModel.nano
+            )
+            self.transcriber = aai.Transcriber(config=config)
             self.audio_chunks = []
             self.accumulated_data = bytearray()
-
+            
         def process(self, frame):
             try:
                 audio_data = frame.to_ndarray()
@@ -148,7 +152,18 @@ else:
             mime="text/plain"
         )
 
-    if candidate_info and st.button("Generate Profile"):
+    # Add transcript summary using LLM
+        if st.session_state.get('current_transcription'):
+            if st.button("Generate Summary"):
+                prompt = "Provide a brief professional summary of the candidate based on this transcript."
+                result = self.transcriber.lemur.task(
+                    prompt, 
+                    final_model=aai.LemurModel.claude3_5_sonnet
+                )
+                st.write("### Summary")
+                st.write(result.response)
+
+        if candidate_info and st.button("Generate Profile"):
         client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
 
         system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
