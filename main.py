@@ -145,7 +145,34 @@ else:
     processor = AudioProcessor()
 
     def audio_frame_callback(frame):
-        return processor.process(frame)
+        audio_data = frame.to_ndarray()
+        if audio_data.size > 0:
+            processor.accumulated_data += bytearray(audio_data.tobytes())  # Append to audio buffer
+            
+            # Process accumulated data when enough is collected
+            if len(processor.accumulated_data) >= 32000:
+                temp_path = Path("temp.wav")
+                with open(temp_path, 'wb') as f:
+                    f.write(processor.accumulated_data)
+
+                try:
+                    result = processor.transcriber.transcribe(filename=str(temp_path))
+                    if result.text and result.text != processor.text_buffer:
+                        processor.text_buffer = result.text
+                        st.session_state.current_transcription = result.text
+                        st.session_state.candidate_info = result.text
+                        st.session_state.saved_audio = processor.accumulated_data
+                except Exception as e:
+                    st.error(f"Transcription error: {str(e)}")
+
+                temp_path.unlink()
+                processor.accumulated_data = bytearray()
+            
+            # Update audio visualization
+            amplitude = np.abs(audio_data).mean()
+            audio_display.progress(min(1.0, amplitude * 20))
+            
+        return frame
 
     # Add editable transcription
     if st.session_state.current_transcription:
