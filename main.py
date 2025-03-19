@@ -109,7 +109,7 @@ else:
                     audio_display.progress(min(1.0, amplitude * 20))
 
                     # Accumulate audio data
-                    self.accumulated_data.extend(audio_data.tobytes())
+                    self.accumulated_data += bytearray(audio_data.tobytes())
 
                     # Every few seconds, transcribe accumulated audio
                     if len(self.accumulated_data) >= 32000:  # Process chunks of ~2 seconds
