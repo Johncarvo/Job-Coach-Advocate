@@ -215,27 +215,30 @@ else:
     # Add download options for audio and transcript
     if st.session_state.get('saved_audio'):
         try:
-            # Convert to bytes if needed
+            # Ensure we have valid audio data
             audio_data = bytes(st.session_state.saved_audio) if isinstance(st.session_state.saved_audio, bytearray) else st.session_state.saved_audio
             
-            # Create audio player
-            st.write("### 🎵 Recorded Audio")
-            st.audio(audio_data, format='audio/wav')
+            if audio_data:
+                # Create audio player
+                st.write("### 🎵 Recorded Audio")
+                st.audio(audio_data, format='audio/wav')
 
-            # Save audio file for download
-            audio_path = Path("recorded_audio.wav")
-            with open(audio_path, 'wb') as f:
-                f.write(audio_data)
+                # Save audio file for download
+                audio_path = Path("recorded_audio.wav")
+                audio_path.write_bytes(audio_data)  # More reliable way to write binary data
 
-            with open(audio_path, 'rb') as f:
-                st.download_button(
-                    "Download Audio",
-                    f,
-                    file_name="recorded_audio.wav",
-                    mime="audio/wav"
-                )
+                # Create download button
+                with open(audio_path, 'rb') as f:
+                    audio_bytes = f.read()
+                    st.download_button(
+                        "💾 Download Audio",
+                        audio_bytes,
+                        file_name="recorded_audio.wav",
+                        mime="audio/wav",
+                        help="Click to download the recorded audio"
+                    )
         except Exception as e:
-            st.error("Error processing audio data for download")
+            st.error(f"Error saving audio: {str(e)}")
 
     if st.session_state.get('final_transcript'):
         st.download_button(
