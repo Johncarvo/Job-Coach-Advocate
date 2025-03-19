@@ -11,5 +11,5 @@ language = "python3"
 requiredFiles = [".replit", "replit.nix"]
 
 [deployment]
-run = ["python3", "main.py"]
+run = ["sh", "-c", "streamlit run main.py --server.address 0.0.0.0 --server.port 8080"]
 deploymentTarget = "cloudrun"
