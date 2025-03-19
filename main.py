@@ -29,7 +29,7 @@ else:
     stop = st.button("Stop Recording")
     
     if start:
-        audio_bytes = st.microphone_input("Click to record", type="audio")
+        audio_bytes = st.audio_recorder()
         if audio_bytes:
             temp_path = Path("temp.wav")
             with open(temp_path, "wb") as f:
@@ -43,9 +43,6 @@ else:
                 candidate_info = transcript.text
                 
             temp_path.unlink()
-        
-        transcriber = aai.Transcriber()
-        transcript = transcriber.transcribe(str(temp_path))
         
         if transcript.text:
             st.write("Transcription:", transcript.text)
