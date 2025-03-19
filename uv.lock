@@ -345,6 +345,12 @@ wheels = [
 ]
 
 [[package]]
+name = "fpdf"
+version = "1.7.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/37/c6/608a9e6c172bf9124aa687ec8b9f0e8e5d697d59a5f4fad0e2d5ec2a7556/fpdf-1.7.2.tar.gz", hash = "sha256:125840783289e7d12552b1e86ab692c37322e7a65b96a99e0ea86cca041b6779", size = 39504 }
+
+[[package]]
 name = "gitdb"
 version = "4.0.12"
 source = { registry = "https://pypi.org/simple" }
@@ -975,7 +981,10 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "assemblyai" },
+    { name = "av" },
     { name = "fastapi" },
+    { name = "fpdf" },
+    { name = "numpy" },
     { name = "openai" },
     { name = "python-dotenv" },
     { name = "python-multipart" },
@@ -986,7 +995,10 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "assemblyai", specifier = ">=0.37.0" },
+    { name = "av", specifier = ">=13.1.0" },
     { name = "fastapi", specifier = ">=0.115.11" },
+    { name = "fpdf", specifier = ">=1.7.2" },
+    { name = "numpy", specifier = ">=2.2.4" },
     { name = "openai", specifier = ">=1.66.5" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "python-multipart", specifier = ">=0.0.20" },

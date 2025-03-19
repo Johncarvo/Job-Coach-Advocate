@@ -12,4 +12,7 @@ dependencies = [
     "python-multipart>=0.0.20",
     "streamlit-webrtc>=0.53.3",
     "streamlit>=1.43.2",
+    "fpdf>=1.7.2",
+    "av>=13.1.0",
+    "numpy>=2.2.4",
 ]
