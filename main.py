@@ -5,7 +5,7 @@ import numpy as np
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-from streamlit_webrtc import webrtc_streamer
+from streamlit_webrtc import webrtc_streamer, WebRtcMode
 import av
 
 load_dotenv()
@@ -200,7 +200,7 @@ else:
 
     webrtc_ctx = webrtc_streamer(
         key="audio-recorder",
-        mode="sendonly",
+        mode=WebRtcMode.SENDONLY,
         audio_frame_callback=audio_frame_callback,
         media_stream_constraints={"video": False, "audio": True},
         async_processing=True,
