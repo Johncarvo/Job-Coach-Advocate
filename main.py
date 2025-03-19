@@ -164,9 +164,9 @@ else:
                 st.write(result.response)
 
         if candidate_info and st.button("Generate Profile"):
-        client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
+            client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
 
-        system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
+            system_prompt = """You are a professional job profile writer. Create a structured profile with the following sections:
         1. Professional Summary
         2. Key Skills
         3. Work Experience
