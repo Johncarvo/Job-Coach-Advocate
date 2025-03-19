@@ -157,19 +157,16 @@ else:
         if edited_text != st.session_state.current_transcription:
             st.session_state.candidate_info = edited_text
 
-    webrtc_streamer(
+    webrtc_ctx = webrtc_streamer(
         key="audio-recorder",
+        mode="sendonly",
         audio_frame_callback=audio_frame_callback,
+        media_stream_constraints={"video": False, "audio": True},
+        async_processing=True,
         rtc_configuration={
-                "iceServers": [
-                    {"urls": ["stun:stun.l.google.com:19302"]},
-                    {"urls": ["stun1.l.google.com:19302"]}
-                ]
-            },
-            media_stream_constraints={"video": False, "audio": True},
-            async_processing=True,
-            sendback_audio=False
-        )
+            "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+        }
+    )
 
     if 'candidate_info' in st.session_state:
         candidate_info = st.session_state.candidate_info
