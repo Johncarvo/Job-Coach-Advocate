@@ -213,14 +213,19 @@ else:
         candidate_info = st.session_state.candidate_info
 
     # Add download options for audio and transcript
-    if st.session_state.get('saved_audio') and isinstance(st.session_state.saved_audio, (bytes, bytearray)):
+    if st.session_state.get('saved_audio'):
         try:
-            st.audio(st.session_state.saved_audio, format='audio/wav')
+            # Convert to bytes if needed
+            audio_data = bytes(st.session_state.saved_audio) if isinstance(st.session_state.saved_audio, bytearray) else st.session_state.saved_audio
+            
+            # Create audio player
+            st.write("### 🎵 Recorded Audio")
+            st.audio(audio_data, format='audio/wav')
 
             # Save audio file for download
             audio_path = Path("recorded_audio.wav")
             with open(audio_path, 'wb') as f:
-                st.session_state.saved_audio.tofile(f)
+                f.write(audio_data)
 
             with open(audio_path, 'rb') as f:
                 st.download_button(
